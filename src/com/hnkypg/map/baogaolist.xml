@@ -1,0 +1,2739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/">
+
+	<insert id="insertbgl" parameterType="bgl" statementType="PREPARED"
+			keyProperty="id" useGeneratedKeys="true">
+		insert into baogaolist
+		(baogaotype,bgnum,laiyuan,zuoluo,zhuanxie,shenhe,kancha,jiazhigoutong,shidian,chujudate,bumen,state,dingjia,shidikc,jszhuanxie,trave,gujiashi,
+		tel,memo,zongjias,fuzeren,creater,createdate,ctstate)
+		values
+		(#{baogaotype},#{bgnum},#{laiyuan},#{zuoluo},#{zhuanxie.userid, jdbcType=INTEGER},#{shenhe.userid, jdbcType=INTEGER},#{kancha.userid, jdbcType=INTEGER},
+		#{jiazhigoutong.userid, jdbcType=INTEGER},#{shidian},#{chujudate},#{bumen},#{state},#{dingjia.userid, jdbcType=INTEGER},#{shidikc.userid, jdbcType=INTEGER},
+		#{jszhuanxie.userid,jdbcType=INTEGER},#{trave, jdbcType=INTEGER},#{gujiashi},#{tel},#{memo},#{zongjias},#{fuzeren.userid, jdbcType=INTEGER},
+		#{creater.userid, jdbcType=INTEGER},#{createdate},#{ctstate, jdbcType=INTEGER})
+	</insert>
+	<insert id="insertbg" parameterType="bg" statementType="PREPARED"
+			keyProperty="id" useGeneratedKeys="true">
+		insert into baogao
+		(bgnum,chanquanren,zuoluo,mianji,niandai,suo,zong,yongtu,danjia,zongjia,shidian,chujudate,proname,trave,bglid,point)
+		values
+		(#{bgnum},#{chanquanren},#{zuoluo},#{mianji},#{niandai},#{suo},#{zong},#{yongtu},#{danjia},#{zongjia},#{shidian},
+		#{chujudate},#{proname},#{trave, jdbcType=INTEGER},#{bglid, jdbcType=INTEGER},#{point})
+	</insert>
+	<select id="findbgidbybunum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT id from baogao where bgnum = #{bgnum}
+	</select>
+	<select id="findbgidbystrave" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT id from baogao where bgnum = #{bgnum} and  trave = 1
+	</select>
+
+	<select id="findbglidbystrave" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT id from baogaolist where bgnum = #{bgnum} and  trave = 1
+	</select>
+	<select id="findbglidbybunum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT IFNULL(MAX(id),0) from baogaolist where bgnum = #{bgnum}
+	</select>
+
+	<resultMap id="bglistmap" type="com.hnkypg.pojo.BaoGaoList">
+		<id column="id" property="id" />
+		<result column="baogaotype" property="baogaotype"/>
+		<result column="bgnum" property="bgnum" />
+		<result column="laiyuan" property="laiyuan" />
+		<result column="zuoluo" property="zuoluo"  />
+		<result column="shidian" property="shidian" />
+		<result column="chujudate" property="chujudate" />
+		<result column="zhuanxie" property="zhuanxie.username" jdbcType="VARCHAR"  />
+		<result column="shenhe" property="shenhe.username" jdbcType="VARCHAR" />
+		<result column="kancha" property="kancha.username" jdbcType="VARCHAR" />
+		<result column="jiazhigoutong" property="jiazhigoutong.username" jdbcType="VARCHAR"  />
+		<result column="dingjia" property="dingjia.username" jdbcType="VARCHAR" />
+		<result column="shidikc" property="shidikc.username" jdbcType="VARCHAR" />
+		<result column="jszhuanxie" property="jszhuanxie.username" jdbcType="VARCHAR" />
+		<result column="fuzeren" property="fuzeren.username" jdbcType="VARCHAR" />
+		<result column="creater" property="creater.username" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="bgluidtmap" type="com.hnkypg.pojo.BaoGaoList">
+		<id column="id" property="id" />
+		<result column="baogaotype" property="baogaotype"/>
+		<result column="bgnum" property="bgnum" />
+		<result column="laiyuan" property="laiyuan" />
+		<result column="zuoluo" property="zuoluo"  />
+		<result column="shidian" property="shidian" />
+		<result column="chujudate" property="chujudate" />
+		<result column="zhuanxie" property="zhuanxie.userid" jdbcType="INTEGER"  />
+		<result column="shenhe" property="shenhe.userid" jdbcType="INTEGER" />
+		<result column="kancha" property="kancha.userid" jdbcType="INTEGER" />
+		<result column="jiazhigoutong" property="jiazhigoutong.userid" jdbcType="INTEGER"  />
+		<result column="dingjia" property="dingjia.userid" jdbcType="INTEGER" />
+		<result column="shidikc" property="shidikc.userid" jdbcType="INTEGER" />
+		<result column="jszhuanxie" property="jszhuanxie.userid" jdbcType="INTEGER" />
+		<result column="fuzeren" property="fuzeren.userid" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="selectBaoGaoList" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		 ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="bglistdown" resultMap="bglistmap" >
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE  tt.bumen = '技术部'
+		ORDER BY tt.chujudate DESC
+	</select>
+
+	<select id="bglistbyquyu" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		where tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen ='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="selectBaoGaoListbydate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate}
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+	<select id="bglistbydatedown" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC
+	</select>
+	<select id="fgsbglbydatequyu" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} and tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="allcounts" resultType="Integer">
+		select count(*) from  baogaolist
+	</select>
+	<select id="allcountsdown" resultType="Integer">
+		select count(*) from  baogaolist where bumen='技术部'
+	</select>
+	<select id="allcountsbyquyu" resultType="Integer">
+		select count(*) from  baogaolist
+		WHERE laiyuan LIKE CONCAT('%',#{bumen},'%') and bumen ='技术部'
+	</select>
+
+	<select id="allcountsbydate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+	SELECT count(*) from(		select
+	t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+	r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+	r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+	from baogaolist t
+	left join user r1
+	on t.zhuanxie = r1.userid
+	left join user r2
+	on t.shenhe = r2.userid
+	left join user r3
+	on t.kancha = r3.userid
+	left join user r4
+	on t.jiazhigoutong = r4.userid
+	left join user r5
+	on t.jszhuanxie = r5.userid
+	left join user r6
+	on t.shidikc = r6.userid
+	left join user r7
+	on t.dingjia = r7.userid
+	left join user r8
+	on t.fuzeren = r8.userid
+	)  as tt
+	WHERE tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate}
+</select>
+
+	<select id="allcountsbydatedown" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} and tt.bumen='技术部'
+	</select>
+
+	<select id="allcountsbydatequyu" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} and tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen ='技术部'
+	</select>
+
+	<select id="findbaogobybgid" parameterType="java.lang.Integer" resultType="bg">
+		select * from  baogao where id = #{bgid,jdbcType=INTEGER}
+	</select>
+
+	<select id="findbglsbybgnum" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.bgnum LIKE CONCAT('%',#{text},'%')
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="findbglsbybgnumquyu" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.bgnum LIKE CONCAT('%',#{text},'%') AND  tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="allcountsbybgnum" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%')
+	</select>
+
+	<select id="allcountsbybgnumquyu" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+	</select>
+
+	<select id="findbglsbybgnumanddate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.bgnum LIKE CONCAT('%',#{text},'%') and tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate}
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="allcountsbybgnumanddate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate}
+	</select>
+
+	<select id="selectbglbyzuoluoqy" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectBaoGaoListbyzuoluo" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%')
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="allcountsbyzuoluo" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%')
+	</select>
+
+	<select id="allcountsbyzuoluoquy" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and  tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen ='技术部'
+	</select>
+
+	<select id="selectBaoGaoListbyzldatequyu" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} and tt.laiyuan LIKE CONCAT('%',#{bumen},'%')
+		and tt.bumen ='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="selectbglbyzldatequyu" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} and  tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="allcountsbyzldate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate}
+	</select>
+
+
+
+	<select id="allcountsbyzldateqy" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} and tt.laiyuan LIKE CONCAT('%',#{bumen},'%')
+		and tt.bumen='技术部'
+	</select>
+
+	<select id="allcountsbyzldatequyu" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zuoluo LIKE CONCAT('%',#{text},'%') and tt.chujudate >= #{startdate} and tt.chujudate  &lt;= #{enddate} AND tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+	</select>
+
+	<select id="findbglbyid" resultMap="bglistmap" parameterType="java.lang.Integer">
+		SELECT * from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,t.state,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.id =#{bglid}
+	</select>
+
+	<update id="updatebglbybglid" parameterType="bgl" >
+		UPDATE baogaolist
+		SET
+		baogaotype=#{baogaotype},
+		bgnum=#{bgnum},
+		laiyuan=#{laiyuan},
+		zuoluo=#{zuoluo},
+		zhuanxie=#{zhuanxie.userid,jdbcType=INTEGER},
+		jszhuanxie=#{jszhuanxie.userid,jdbcType=INTEGER},
+		shenhe=#{shenhe.userid,jdbcType=INTEGER},
+		kancha=#{kancha.userid,jdbcType=INTEGER},
+		shidikc=#{shidikc.userid,jdbcType=INTEGER},
+		jiazhigoutong=#{jiazhigoutong.userid,jdbcType=INTEGER},
+		dingjia=#{dingjia.userid,jdbcType=INTEGER},
+		fuzeren=#{fuzeren.userid,jdbcType=INTEGER},
+		shidian=#{shidian},
+		chujudate=#{chujudate},
+		bumen=#{bumen},
+		state=#{state},
+		zongjias=#{zongjias},
+		gujiashi=#{gujiashi},
+		tel = #{tel},
+		memo = #{memo},
+		updater = #{updater.userid,jdbcType=INTEGER},
+		updatetime = #{updatetime}
+		where id=#{id}
+	</update>
+
+	<update id="updatebgbybgid" parameterType="bg" >
+		UPDATE baogao
+		SET
+		bgnum=#{bgnum},
+		chanquanren=#{chanquanren},
+		zuoluo=#{zuoluo},
+		mianji=#{mianji},
+		niandai=#{niandai},
+		suo=#{suo},
+		zong=#{zong},
+		yongtu=#{yongtu},
+		danjia=#{danjia},
+		zongjia=#{zongjia},
+		shidian=#{shidian},
+		chujudate=#{chujudate},
+		gujiashi=#{gujiashi},
+		proname=#{proname},
+		tel=#{tel},
+		memo=#{memo}
+		where id=#{id}
+	</update>
+
+	<update id="updatebgbglid" parameterType="bg" >
+		UPDATE baogao
+		SET
+		bglid = #{bglid}
+		where id=#{id}
+	</update>
+
+	<update id="updatebglstatebyid" parameterType="java.lang.Integer" >
+		UPDATE baogaolist
+		SET
+		state= 2
+		where id=#{bglid}
+	</update>
+
+	<select id="zhuanxietongjibyuserid" resultType="Integer" parameterType="User">
+		SELECT count(*)
+		from baogaolist
+		WHERE zhuanxie = #{userid}
+	</select>
+
+	<select id="shenhetongjibyuserid" resultType="Integer" parameterType="User">
+		SELECT count(*)
+		from baogaolist
+		WHERE shenhe =#{userid}
+	</select>
+
+	<select id="kanchatongjibyuserid" resultType="Integer" parameterType="User">
+		SELECT count(*)
+		from baogaolist
+		WHERE kancha = #{userid}
+	</select>
+
+	<select id="jzgttongjibyuserid" resultType="Integer" parameterType="User">
+		SELECT count(*)
+		from baogaolist
+		WHERE jiazhigoutong = #{userid}
+	</select>
+
+	<select id="tongjibyuserid" resultType="tj" parameterType="User">
+		select * from (
+		SELECT name , rr.bumen,'预评报告' baogaotype,month,sum(zhuanxie) zxcount,sum(shenhe) shcount,sum(kancha) kccount,sum(jiazhigoutong) jzgtcount FROM (
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month,count(*) zhuanxie,0 shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist ,user r
+						WHERE zhuanxie = #{userid} and zhuanxie =r.userid
+						and baogaotype ='预评报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+			UNION ALL
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month, 0 zhuanxie,count(*) shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist ,user r
+						WHERE shenhe = #{userid} and shenhe =r.userid
+						and baogaotype ='预评报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+			UNION ALL
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,count(*) kancha ,0 jiazhigoutong FROM baogaolist ,user r
+						WHERE kancha = #{userid} and kancha =r.userid
+						and baogaotype ='预评报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+			UNION ALL
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,0 kancha ,count(*) jiazhigoutong FROM baogaolist ,user r
+						WHERE jiazhigoutong = #{userid} and jiazhigoutong =r.userid
+						and baogaotype ='预评报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+		) t,user rr
+		where rr.userid =#{userid}
+		GROUP BY month
+
+		UNION all
+
+		SELECT name , rr.bumen,'正式报告' baogaotype,month,sum(zhuanxie) zxcount,sum(shenhe) shcount,sum(kancha) kccount,sum(jiazhigoutong) jzgtcount FROM (
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month,count(*) zhuanxie,0 shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist ,user r
+						WHERE zhuanxie = #{userid} and zhuanxie =r.userid
+						and baogaotype ='正式报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+			UNION ALL
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month, 0 zhuanxie,count(*) shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist ,user r
+						WHERE shenhe = #{userid} and shenhe =r.userid
+						and baogaotype ='正式报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+			UNION ALL
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,count(*) kancha ,0 jiazhigoutong FROM baogaolist ,user r
+						WHERE kancha = #{userid} and kancha =r.userid
+						and baogaotype ='正式报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+			UNION ALL
+			SELECT r.username name, DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,0 kancha ,count(*) jiazhigoutong FROM baogaolist ,user r
+						WHERE jiazhigoutong = #{userid} and jiazhigoutong =r.userid
+						and baogaotype ='正式报告' and DATE_FORMAT(chujudate,'%Y')=2017 GROUP BY month
+		) t,user rr
+		where rr.userid =#{userid}
+		GROUP BY month ) tt ORDER BY tt.month DESC
+	</select>
+
+	<select id="tongjibysearch" resultType="tj" parameterType="sreachtj">
+	SELECT r.username , r.bumen,'预评报告' baogaotype,month,sum(zhuanxie) zxcount,sum(shenhe) shcount,sum(kancha) kccount,sum(jiazhigoutong) jzgtcount FROM (
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,count(*) zhuanxie,0 shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist WHERE zhuanxie = #{userid} and baogaotype ='预评报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+		UNION ALL
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,count(*) shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist WHERE shenhe = #{userid} and baogaotype ='预评报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+		UNION ALL
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,count(*) kancha ,0 jiazhigoutong FROM baogaolist WHERE kancha = #{userid} and baogaotype ='预评报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+		UNION ALL
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,0 kancha,COUNT(*) jiazhigoutong FROM baogaolist WHERE kancha = #{userid} and baogaotype ='预评报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+	) t,user r
+	WHERE r.userid = #{userid}
+
+	UNION ALL
+
+	SELECT r.username , r.bumen,'正式报告' baogaotype,month,sum(zhuanxie) zxcount,sum(shenhe) shcount,sum(kancha) kccount,sum(jiazhigoutong) jzgtcount FROM (
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,count(*) zhuanxie,0 shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist WHERE zhuanxie =#{userid} and baogaotype ='正式报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+		UNION ALL
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,count(*) shenhe,0 kancha ,0 jiazhigoutong FROM baogaolist WHERE shenhe = #{userid} and baogaotype ='正式报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+		UNION ALL
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,count(*) kancha ,0 jiazhigoutong FROM baogaolist WHERE kancha = #{userid} and baogaotype ='正式报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+		UNION ALL
+		SELECT DATE_FORMAT(chujudate,'%Y-%m') as month,0 zhuanxie,0 shenhe,0 kancha,COUNT(*) jiazhigoutong FROM baogaolist WHERE kancha = #{userid} and baogaotype ='正式报告' AND DATE_FORMAT(chujudate,'%Y')=#{year}
+	) t,user r
+	WHERE r.userid =  #{userid}
+	</select>
+
+	<select id="findbgsbybglid" parameterType="java.lang.Integer" resultType="bg">
+		SELECT * from baogao where bglid = #{bglid}
+	</select>
+
+	<delete id="delbgbybglid" parameterType="java.lang.Integer">
+		DELETE FROM baogao WHERE (bglid=#{bglid})
+	</delete>
+
+	<select id="selectBaoGaoListbyproname" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') )
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectbglbypronameqy" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') ) and tt.laiyuan  LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="allcountBaoGaoListbyproname"  resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT COUNT(*) from(		select
+					t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+					r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+					r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+				from baogaolist t
+					left join user r1
+					on t.zhuanxie = r1.userid
+					left join user r2
+					on t.shenhe = r2.userid
+					left join user r3
+					on t.kancha = r3.userid
+					left join user r4
+					on t.jiazhigoutong = r4.userid
+					left join user r5
+					on t.jszhuanxie = r5.userid
+					left join user r6
+					on t.shidikc = r6.userid
+					left join user r7
+					on t.dingjia = r7.userid
+					left join user r8
+					on t.fuzeren = r8.userid
+					)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text,jdbcType=VARCHAR},'%') )
+
+
+-- 		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') ) and tt.laiyuan  LIKE CONCAT('%',#{bumen},'%')
+	</select>
+
+	<select id="allcountbglbypronameqy"  resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT COUNT(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') ) and tt.laiyuan  LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+	</select>
+
+	<select id="selectBaoGaoListbypronameanddate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(
+		SELECT * from(
+		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="selectbglbypronameanddateqy" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(
+		SELECT * from(
+		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and  ttt.laiyuan LIKE CONCAT('%',#{bumen},'%') and ttt.bumen = '技术部'
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="allcountBaoGaoListbypronameandate"  resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT COUNT(*) from(
+		SELECT * from(
+		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+	</select>
+
+
+	<select id="allcountbglbypronameandateqy"  resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT COUNT(*) from(
+		SELECT * from(
+		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.proname LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.laiyuan LIKE CONCAT('%',#{text},'%') and ttt.bumen='技术部'
+	</select>
+	<select id="selectbgls"  resultMap="bgluidtmap"  >
+		SELECT * from baogaolist
+	</select>
+	<select id="selectbglsbyid"  resultMap="bgluidtmap"  >
+		SELECT * from baogaolist where ctstate = 2
+	</select>
+	<select id="selectbgsbynull"  resultType="bg">
+		SELECT * from baogao where bglid = 0
+	</select>
+
+	<select id="selectBaoGaoListbycqr" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') )
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectbglbycqrquyu" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') ) and tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="countbycqr" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') )
+
+
+	</select>
+
+	<select id="countbycqrquyu" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') ) and tt.laiyuan LIKE CONCAT('%',#{bumen},'%') and tt.bumen='技术部'
+
+
+	</select>
+
+
+	<select id="selectBaoGaoListbycqranddate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectbglbycqranddateqy" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.laiyuan LIKE CONCAT('%',#{bumen},'%') and ttt.bumen='技术部'
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="countbycqrandate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+
+		SELECT count(*) from(
+		SELECT * from(
+		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+
+
+
+	</select>
+
+	<select id="countbycqrandatequyu" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+
+		SELECT count(*) from(
+		SELECT * from(
+		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.id IN (SELECT b.bglid from baogao b where b.chanquanren LIKE CONCAT('%',#{text},'%') )
+		)as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.laiyuan LIKE CONCAT('%',#{bumen},'%') and ttt.bumen='技术部'
+
+
+
+	</select>
+
+
+	<select id="selectBaoGaoListbyzxorjszx" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+	SELECT * from(		select
+	t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+	r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+	r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+	from baogaolist t
+	left join user r1
+	on t.zhuanxie = r1.userid
+	left join user r2
+	on t.shenhe = r2.userid
+	left join user r3
+	on t.kancha = r3.userid
+	left join user r4
+	on t.jiazhigoutong = r4.userid
+	left join user r5
+	on t.jszhuanxie = r5.userid
+	left join user r6
+	on t.shidikc = r6.userid
+	left join user r7
+	on t.dingjia = r7.userid
+	left join user r8
+	on t.fuzeren = r8.userid
+	)  as tt
+	WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text}
+	ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+</select>
+
+	<select id="selectBaoGaoListbylaiyuan" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.laiyuan LIKE   CONCAT('%',#{text},'%')
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectBaoGaoListbyzxorjszxall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text} and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC
+	</select>
+
+	<select id="selectBaoGaoListbyzporsd" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.kancha = #{text} OR tt.shidikc = #{text}
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="selectBaoGaoListbyzporsddwall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.kancha = #{text} OR tt.shidikc = #{text} and tt.bumen ='技术部'
+		ORDER BY tt.chujudate DESC
+	</select>
+
+	<select id="selectBaoGaoListbyshdown" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text}
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectBaoGaoListbyshdownall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text} and tt.bumen = '技术部'
+		ORDER BY tt.chujudate DESC
+	</select>
+
+	<select id="selectBaoGaoListbyjzdown" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text}
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="selectBaoGaoListbyjzdownall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text} and tt.bumen='技术部'
+		ORDER BY tt.chujudate DESC
+	</select>
+
+	<select id="selectBaoGaoListbydjdown" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.dingjia = #{text}
+		ORDER BY tt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="selectBaoGaoListbydjdownall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.dingjia = #{text} AND  tt.bumen ='技术部'
+		ORDER BY tt.chujudate DESC
+	</select>
+
+	<select id="countbyzporsd" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.kancha = #{text} OR tt.shidikc = #{text}
+	</select>
+
+	<select id="countbyzporsdall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.kancha = #{text} OR tt.shidikc = #{text} AND  tt.bumen = '技术部'
+	</select>
+
+
+	<select id="countbyshdown" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text}
+	</select>
+
+	<select id="countbyshdownall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text} AND tt.bumen='技术部'
+	</select>
+
+
+
+
+	<select id="countbyjzdown" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text}
+	</select>
+
+	<select id="countbyjzdownall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text} AND tt.bumen='技术部'
+	</select>
+
+	<select id="countbydjdown" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+	SELECT count(*) from(		select
+	t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+	r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+	r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+	from baogaolist t
+	left join user r1
+	on t.zhuanxie = r1.userid
+	left join user r2
+	on t.shenhe = r2.userid
+	left join user r3
+	on t.kancha = r3.userid
+	left join user r4
+	on t.jiazhigoutong = r4.userid
+	left join user r5
+	on t.jszhuanxie = r5.userid
+	left join user r6
+	on t.shidikc = r6.userid
+	left join user r7
+	on t.dingjia = r7.userid
+	left join user r8
+	on t.fuzeren = r8.userid
+	)  as tt
+	WHERE tt.dingjia = #{text}
+	</select>
+
+	<select id="countbydjdownall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.dingjia = #{text} and tt.bumen='技术部'
+	</select>
+
+	<select id="countbyzxorjszx" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text}
+	</select>
+
+	<select id="countbylaiyuan" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.laiyuan LIKE   CONCAT('%',#{text},'%')
+	</select>
+
+	<select id="countbyzxorjszxall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT count(*) from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text} AND  tt.bumen ='技术部'
+	</select>
+
+
+	<select id="selectBaoGaoListbyzxorjszxdate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectBaoGaoListbylaiyuandate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.laiyuan LIKE  CONCAT('%',#{text},'%'))
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectBaoGaoListbyzxorjszxdateall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} AND  ttt.bumen='技术部'
+		ORDER BY ttt.chujudate DESC
+	</select>
+
+	<select id="selectBaoGaoListbyzporsddate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shidikc = #{text} OR tt.kancha = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectBaoGaoListbyzporsddatedownall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shidikc = #{text} OR tt.kancha = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.bumen ='技术部'
+		ORDER BY ttt.chujudate DESC
+	</select>
+
+	<select id="selectBaoGaoListbyshdowndate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectBaoGaoListbyshdowndateall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} AND ttt.bumen ='技术部'
+		ORDER BY ttt.chujudate DESC
+	</select>
+
+
+	<select id="selectjzdownbydate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="selectjzdownbydateall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} AND  ttt.bumen='技术部'
+		ORDER BY ttt.chujudate DESC
+	</select>
+
+	<select id="selectdjdownbydate" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.dingjia = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+		ORDER BY ttt.chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+
+	<select id="selectdjdownbydateall" resultMap="bglistmap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  * from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.dingjia = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} AND ttt.bumen ='技术部'
+		ORDER BY ttt.chujudate DESC
+	</select>
+
+	<select id="countbyzxorjszxdateall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text} )
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} AND ttt.bumen = '技术部'
+	</select>
+
+	<select id="countbyzporsddate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.kancha = #{text} OR tt.shidikc = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+	</select>
+
+
+	<select id="countbyzporsddateall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.kancha = #{text} OR tt.shidikc = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.bumen='技术部'
+	</select>
+
+	<select id="countbyshdownddate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+	</select>
+
+	<select id="countbyshdownddateall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.shenhe = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.bumen ='技术部'
+	</select>
+
+	<select id="countbyjzdowndate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+	</select>
+
+
+	<select id="countbyjzdowndateall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.jiazhigoutong = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.bumen = '技术部'
+	</select>
+
+
+	<select id="countbydjdowndate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.dingjia = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+	</select>
+
+	<select id="countbydjdowndateall" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.dingjia = #{text})
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate} and ttt.bumen ='技术部'
+	</select>
+
+	<update id="updatectstates" parameterType="bgl" >
+		UPDATE baogaolist
+		SET
+		ctstate = #{ctstate}
+		where id = #{id}
+	</update>
+
+	<select id="countbyzxorjszxdate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+	SELECT  COUNT(*) from (
+	SELECT * from(		select
+	t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+	r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+	r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+	from baogaolist t
+	left join user r1
+	on t.zhuanxie = r1.userid
+	left join user r2
+	on t.shenhe = r2.userid
+	left join user r3
+	on t.kancha = r3.userid
+	left join user r4
+	on t.jiazhigoutong = r4.userid
+	left join user r5
+	on t.jszhuanxie = r5.userid
+	left join user r6
+	on t.shidikc = r6.userid
+	left join user r7
+	on t.dingjia = r7.userid
+	left join user r8
+	on t.fuzeren = r8.userid
+	)  as tt
+	WHERE tt.zhuanxie = #{text} OR tt.jszhuanxie = #{text})
+	as ttt
+	WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+</select>
+
+	<select id="countbylaiyuandate" resultType="Integer" parameterType="com.hnkypg.pojo.sreach">
+		SELECT  COUNT(*) from (
+		SELECT * from(		select
+		t.id,t.baogaotype,t.bgnum,t.zuoluo,t.chujudate,t.shidian,t.laiyuan,t.bumen,t.zongjias,t.tel,t.memo,t.gujiashi,
+		r1.username as zhuanxie, r2.username as shenhe,r3.username as kancha,r4.username AS jiazhigoutong,r5.username AS jszhuanxie,
+		r6.username AS shidikc,r7.username AS dingjia, r8.username as fuzeren
+		from baogaolist t
+		left join user r1
+		on t.zhuanxie = r1.userid
+		left join user r2
+		on t.shenhe = r2.userid
+		left join user r3
+		on t.kancha = r3.userid
+		left join user r4
+		on t.jiazhigoutong = r4.userid
+		left join user r5
+		on t.jszhuanxie = r5.userid
+		left join user r6
+		on t.shidikc = r6.userid
+		left join user r7
+		on t.dingjia = r7.userid
+		left join user r8
+		on t.fuzeren = r8.userid
+		)  as tt
+		WHERE tt.laiyuan like  CONCAT('%',#{text},'%'))
+		as ttt
+		WHERE ttt.chujudate >= #{startdate} and ttt.chujudate  &lt;= #{enddate}
+	</select>
+
+	<select id="countzhuanxietj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+			SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.zhuanxie,t.baogaotype
+			from baogaolist as t
+		)as tt
+		where tt.zhuanxie = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen} and tt.baogaotype= #{baogaotype}
+	</select>
+
+
+	<select id="countjszhuanxietj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+		SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.jszhuanxie,t.baogaotype
+		from baogaolist as t
+		)as tt
+		where tt.jszhuanxie = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen} and tt.baogaotype= #{baogaotype}
+	</select>
+
+	<select id="countkanchatj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+		SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.kancha,t.baogaotype
+		from baogaolist as t
+		)as tt
+		where tt.kancha = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen} and tt.baogaotype= #{baogaotype}
+	</select>
+
+
+	<select id="countshidikctj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+		SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.shidikc,t.baogaotype
+		from baogaolist as t
+		)as tt
+		where tt.shidikc = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen} and tt.baogaotype= #{baogaotype}
+	</select>
+
+
+	<select id="countshenhetj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+		SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.shenhe,t.baogaotype
+		from baogaolist as t
+		)as tt
+		where tt.shenhe = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen} and tt.baogaotype= #{baogaotype}
+	</select>
+
+	<select id="countjiazhigoutongtj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+		SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.jiazhigoutong,t.baogaotype
+		from baogaolist as t
+		)as tt
+		where tt.jiazhigoutong = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen} and tt.baogaotype= #{baogaotype}
+	</select>
+
+
+	<select id="countdingjiatj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+		SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.dingjia,t.baogaotype
+		from baogaolist as t
+		)as tt
+		where tt.dingjia = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen} and tt.baogaotype= #{baogaotype}
+	</select>
+	<select id="countfgstj" resultType="FLOAT" parameterType="com.hnkypg.pojo.sreach">
+		select count(*) from(
+		SELECT  t.bumen , DATE_FORMAT(t.chujudate,'%Y-%m')as month , t.shenhe,t.baogaotype,t.laiyuan
+		from baogaolist as t
+		)as tt
+		where tt.shenhe = #{user.userid} and tt.month = #{yearmonth} AND tt.bumen= #{bumen}  and tt.laiyuan like '%新乡%'
+	</select>
+
+
+
+	<select id="findbglbyidss" resultType="bgl" parameterType="java.lang.Integer">
+		select * from baogaolist where id = #{bglid}
+	</select>
+
+	<select id="findbgsbybglidss" resultType="bg" parameterType="java.lang.Integer">
+		select * from baogao where bglid = #{bglid}
+	</select>
+
+</mapper>

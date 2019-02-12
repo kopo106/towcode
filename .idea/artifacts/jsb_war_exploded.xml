@@ -1,0 +1,39 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" build-on-make="true" name="jsb:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/jsb_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="jsb" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Spring-4.3.7.RELEASE" />
+          <element id="library" level="project" name="Spring MVC-4.3.6.RELEASE" />
+          <element id="library" level="project" name="mybatis-3.4.4" />
+          <element id="library" level="project" name="gson-2.2.2" />
+          <element id="library" level="project" name="jstl" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/jstl.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/standard.jar" />
+          <element id="library" level="project" name="log4j-1.2.17" />
+          <element id="library" level="application" name="jstl" />
+          <element id="library" level="project" name="standard" />
+          <element id="library" level="project" name="mysql-connector-java-5.1.26-bin" />
+          <element id="library" level="project" name="org.slf4j:slf4j-api:1.7.25" />
+          <element id="library" level="project" name="json-lib-2.4-jdk15" />
+          <element id="library" level="project" name="QRCode" />
+          <element id="library" level="project" name="docx4j-3.3.6" />
+          <element id="library" level="project" name="org.apache.logging.log4j:log4j-slf4j-impl:2.7" />
+          <element id="library" level="project" name="log4j-api-2.3" />
+          <element id="library" level="project" name="log4j-core-2.3" />
+          <element id="library" level="project" name="slf4j-api-1.7.25" />
+          <element id="library" level="project" name="serializer-2.7.2" />
+          <element id="library" level="project" name="xalan-2.7.2" />
+          <element id="library" level="project" name="xmlgraphics-commons-2.2" />
+          <element id="library" level="project" name="guava-20.0" />
+          <element id="library" level="project" name="jacob" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="jsb/web/Web" />
+    </root>
+  </artifact>
+</component>

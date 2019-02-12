@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="GB2312" standalone="yes"?>
+<Signature>
+	<FONT>
+		<Language>GBC_</Language>
+		<FontName>宋体</FontName>
+		<FontSize>9</FontSize>
+		<CharSet>1</CharSet>
+	</FONT>
+	<PARAMS>
+		<ProtectDocument>TRUE</ProtectDocument>
+		<PrintVisible>TRUE</PrintVisible>
+		<ShowDateTime Format="yyyy-mm-dd hh:nn:ss">FALSE</ShowDateTime>
+		<AutoDigital>TRUE</AutoDigital>
+		<CSPName>M___W eKey XCSP</CSPName>
+	</PARAMS>
+	<HANDWRITE>
+		<WordFont Name="宋体" Size="14" Color="255">
+			<fsBold>True</fsBold>
+			<fsItalic>False</fsItalic>
+			<fsUnderline>False</fsUnderline>
+			<fsStrikeOut>False</fsStrikeOut>
+		</WordFont>
+		<HandPen Width="1" Color="255" Trans="100">
+			<PenWidth>一线</PenWidth>
+			<PenWidth>二线</PenWidth>
+			<PenWidth>三线</PenWidth>
+			<PenWidth>四线</PenWidth>
+			<PenWidth>五线</PenWidth>
+		</HandPen>
+		<USUALLYS>
+		</USUALLYS>
+	</HANDWRITE>
+	<CERTVERIFY>
+		<RootVerify FileName="">True</RootVerify>
+		<CRLVerify FileName="">True</CRLVerify>
+	</CERTVERIFY>
+	<PassWord>
+		<PassLength>0</PassLength>
+		<PassMix>-1</PassMix>
+	</PassWord>
+</Signature>

@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="war" build-on-make="true" name="jsb">
+    <output-path>$PROJECT_DIR$/out/artifacts/jsb</output-path>
+    <root id="archive" name="jsb.war">
+      <element id="artifact" artifact-name="jsb:war exploded" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="org.slf4j:slf4j-api:1.7.25" />
+          <element id="library" level="project" name="json-lib-2.4-jdk15" />
+          <element id="library" level="project" name="QRCode" />
+          <element id="library" level="project" name="docx4j-3.3.6" />
+          <element id="library" level="project" name="org.apache.logging.log4j:log4j-slf4j-impl:2.7" />
+          <element id="library" level="project" name="log4j-api-2.3" />
+          <element id="library" level="project" name="log4j-core-2.3" />
+          <element id="library" level="project" name="slf4j-api-1.7.25" />
+          <element id="library" level="project" name="serializer-2.7.2" />
+          <element id="library" level="project" name="xalan-2.7.2" />
+          <element id="library" level="project" name="xmlgraphics-commons-2.2" />
+          <element id="library" level="project" name="guava-20.0" />
+          <element id="library" level="project" name="jacob" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

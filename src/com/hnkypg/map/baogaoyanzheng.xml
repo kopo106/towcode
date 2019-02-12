@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/">
+
+	<insert id="insertbgyz" parameterType="yanzheng" statementType="PREPARED"
+			keyProperty="id" useGeneratedKeys="true">
+		insert into baogaoyanzheng
+		(bgnum,bgname,gujiashi,pinggujigou,zongjia,jianzhumianji,status,chujudate,createdate,TwiceEncString,memo)
+		values
+		(#{bgnum},#{bgname},#{gujiashi},#{pinggujigou},#{zongjia},#{jianzhumianji},#{status, jdbcType=INTEGER},#{chujudate},#{createdate},#{TwiceEncString},#{memo})
+	</insert>
+
+
+	<select id="findbgyanzheng" parameterType="String" resultType="yanzheng">
+		select * from  baogaoyanzheng where TwiceEncString = #{TwiceEncString}
+	</select>
+
+	<select id="findbgyzs"  resultType="com.hnkypg.pojo.baogaoyanzheng">
+		select * from  baogaoyanzheng ORDER BY chujudate DESC
+	</select>
+
+	<select id="countfindbgyzs"  resultType="java.lang.Integer">
+		select count(*) from  baogaoyanzheng
+	</select>
+
+
+	<select id="findbgyzsbydate"  resultType="com.hnkypg.pojo.baogaoyanzheng"  parameterType="com.hnkypg.pojo.sreach">
+		select * from  baogaoyanzheng
+		WHERE chujudate >= #{startdate} and chujudate  &lt;= #{enddate}
+		ORDER BY chujudate DESC
+	</select>
+
+	<select id="countfindbgyzsbydate"  resultType="java.lang.Integer">
+		select count(*) from  baogaoyanzheng
+		WHERE chujudate >= #{startdate} and chujudate  &lt;= #{enddate}
+	</select>
+
+	<select id="findbgyzsbydateol"  resultType="com.hnkypg.pojo.baogaoyanzheng"  parameterType="com.hnkypg.pojo.sreach">
+		select * from  baogaoyanzheng
+		ORDER BY chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="countfindbgyzsbydateol"  resultType="java.lang.Integer">
+		select count(*) from  baogaoyanzheng
+		ORDER BY chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="findbgyzsbydatelimit"  resultType="com.hnkypg.pojo.baogaoyanzheng"  parameterType="com.hnkypg.pojo.sreach">
+		select * from  baogaoyanzheng
+		WHERE chujudate >= #{startdate} and chujudate  &lt;= #{enddate}
+		ORDER BY chujudate DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<update id="updatebgyzstatus" parameterType="java.lang.Integer" >
+		UPDATE baogaoyanzheng
+		SET
+		status= 2
+		where id = #{bgyzid}
+	</update>
+
+
+	<insert id="insertsuoyin" parameterType="suoyin" statementType="PREPARED"
+			keyProperty="id" useGeneratedKeys="true">
+		insert into suoyin
+		(dkey,pkey,EncString)
+		values
+		(#{dkey},#{pkey},#{EncString})
+	</insert>
+
+
+	<select id="findpsw" parameterType="String" resultType="suoyin">
+		select * from  suoyin where pkey = #{pkey}
+	</select>
+
+
+	<select id="findmaxid"  resultType="INTEGER">
+		 select max(id) from suoyin
+	</select>
+
+	<select id="findpkeyif" parameterType="String" resultType="INTEGER">
+		select count(*) from suoyin where pkey = #{pkey}
+	</select>
+
+	<select id="findbgnumyanzif" parameterType="String" resultType="INTEGER">
+		select count(*) from baogaoyanzheng where bgnum = #{bgnum}
+	</select>
+
+	<select id="findbgyzbybgzid" parameterType="INTEGER" resultType="yanzheng">
+		select * from baogaoyanzheng where id = #{bgyzid}
+	</select>
+
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+  <typeAliases>
+      <!--<typeAlias alias="JiKeUser"  type="com.hnkypg.pojo.JiKeUser" />-->
+      <!--<typeAlias alias="Author"  type="com.hnkypg.pojo.Author" />-->
+    <typeAlias alias="User"  type="com.hnkypg.pojo.User" />
+    <typeAlias alias="bgl"  type="com.hnkypg.pojo.BaoGaoList" />
+    <typeAlias alias="bg"  type="com.hnkypg.pojo.BaoGao" />
+    <typeAlias alias="tj"  type="com.hnkypg.pojo.tongji" />
+    <typeAlias alias="sreachtj"  type="com.hnkypg.pojo.sreachTongji" />
+    <typeAlias alias="count"  type="com.hnkypg.pojo.Count" />
+    <typeAlias alias="tja"  type="com.hnkypg.pojo.Tontjia" />
+    <typeAlias alias="anli"  type="com.hnkypg.pojo.anli" />
+    <typeAlias alias="fgsbgl"  type="com.hnkypg.pojo.fgsbgl" />
+    <typeAlias alias="SS"  type="com.hnkypg.pojo.sreach" />
+    <typeAlias alias="yanzheng"  type="com.hnkypg.pojo.baogaoyanzheng" />
+    <typeAlias alias="suoyin"  type="com.hnkypg.pojo.suoyin" />
+
+
+  </typeAliases>
+  
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC">
+      </transactionManager>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://222.85.127.116:6036/test?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="Kopo6311"/>
+        <!--<property name="url" value="jdbc:mysql://192.168.1.15:3306/test?useUnicode=true&amp;characterEncoding=utf-8"/>-->
+        <!--<property name="username" value="root"/>-->
+        <!--<property name="password" value="Kopo106"/>-->
+      </dataSource>
+    </environment>
+  </environments>
+
+
+  <mappers>
+    <mapper resource="com/hnkypg/map/user.xml"/>
+    <mapper resource="com/hnkypg/map/baogaolist.xml"/>
+    <mapper resource="com/hnkypg/map/tongji.xml"/>
+    <mapper resource="com/hnkypg/map/anli.xml"/>
+    <mapper resource="com/hnkypg/map/fgsbgl.xml"/>
+    <mapper resource="com/hnkypg/map/baogaoyanzheng.xml"/>
+  </mappers>
+
+
+</configuration>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/">
+
+    <insert id="insertAnli" parameterType="anli" statementType="PREPARED"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into anli
+        (proname,guapai,fangwoleixing,fangwojiegou,jungong,zhuangxiu,jingguan,chaoxiang,zong,suo,shi,ting,wei,mianji,zongjia,danjia,Url,date,quyu)
+        values
+        (#{proname},#{guapai},#{fangwoleixing},#{fangwojiegou},#{jungong},
+        #{zhuangxiu},#{jingguan},#{chaoxiang},#{zong},#{suo},#{shi},#{ting},#{wei},#{mianji},#{zongjia},#{danjia},#{Url},#{date},#{quyu})
+    </insert>
+
+
+</mapper>

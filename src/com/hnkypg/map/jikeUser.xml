@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="/">
+
+	<select id="findById" parameterType="int" resultType="com.hnkypg.pojo.JiKeUser">
+		select * from user where id=#{id}
+	</select>
+	<insert id="insertUser" parameterType="JiKeUser" statementType="PREPARED"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into user
+		(name,age) values
+		(#{name},#{age})
+	</insert>
+	<update id="updateUser" parameterType="JiKeUser">
+		UPDATE user SET
+		name=#{name},
+		age=#{age}
+		WHERE id = #{id}
+	</update>
+	<select id="loginSelect" resultType="JiKeUser" parameterType="hashmap">
+		select * from user where name=#{name} and age=#{age}
+	</select>
+
+	<select id="login2" resultType="JiKeUser" parameterType="JiKeUser">
+		select * from user where name=#{name} and age=#{age}
+	</select>
+	<select id="selectJiKeUserList" resultType="JiKeUser">
+		select * from user
+	</select>
+	<resultMap id="JiKeUserMap" type="JiKeUser">
+		<id property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="age" column="age"/>
+	</resultMap>
+	<select id="selectUsers" resultMap="JiKeUserMap">
+		select id, name, age from user
+	</select>
+
+</mapper>

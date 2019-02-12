@@ -1,0 +1,805 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="/">
+
+	<insert id="insertTj" parameterType="count" statementType="PREPARED"
+			keyProperty="id" useGeneratedKeys="true">
+		insert into tongji ( userid, Bglid, chujudate, Tjtype,count,baogaotype)
+		values
+		(#{user.userid},#{bgl.id, jdbcType=INTEGER},#{bgl.chujudate},#{tjtype},#{count},#{bgl.baogaotype})
+	</insert>
+
+	<delete id="deltjbybglid" parameterType="java.lang.Integer">
+		DELETE FROM tongji WHERE (Bglid=#{bglid})
+	</delete>
+
+	<resultMap id="tongjiamap" type="com.hnkypg.pojo.Tontjia" >
+		<id column="id" property="id" />
+		<result column="username" property="user.username" jdbcType="VARCHAR"/>
+		<result column="bumen" property="user.bumen" jdbcType="VARCHAR"/>
+		<result column="month" property="month" jdbcType="VARCHAR" />
+		<result column="baogaotype" property="baogaotype" jdbcType="VARCHAR" />
+		<result column="zhuanxie" property="zhuanxie" jdbcType="FLOAT" />
+		<result column="jszhuanxie" property="jszhuanxie" jdbcType="FLOAT" />
+		<result column="shenhe" property="shenhe" jdbcType="FLOAT"/>
+		<result column="kancha" property="kancha" jdbcType="FLOAT"  />
+		<result column="shidikc" property="shidikc" jdbcType="FLOAT" />
+		<result column="dingjia" property="dingjia" jdbcType="FLOAT" />
+		<result column="jiazhigoutong" property="jiazhigoutong" jdbcType="FLOAT"  />
+	</resultMap>
+
+	<select id="tongjiall" resultMap="tongjiamap" parameterType="com.hnkypg.pojo.sreach">
+SELECT tt.username,tt.bumen,tt.baogaotype,tt.`month`,SUM(zhuanxie) as zhuanxie,SUM(shenhe) as shenhe,SUM(kancha) as kancha,SUM(shidikc) as shidikc,SUM(dingjia) as dingjia,SUM(jiazhigoutong) as jiazhigoutong,SUM(jszhuanxie) as jszhuanxie,SUM(fgs) as fgs
+		 from(
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '预评报告' and Tjtype ='zhuanxie'
+			GROUP BY r1.username,month
+
+			union ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '正式报告' and Tjtype ='zhuanxie'
+			GROUP BY r1.username,month
+
+			UNION ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie   , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '预评报告' and Tjtype ='shenhe'
+			GROUP BY r1.username,month
+
+			union ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '正式报告' and Tjtype ='shenhe'
+			GROUP BY r1.username,month
+
+			UNION ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs  from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '预评报告' and Tjtype ='kancha'
+			GROUP BY r1.username,month
+
+			union ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '正式报告' and Tjtype ='kancha'
+			GROUP BY r1.username,month
+
+			UNION ALL
+
+			SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '预评报告' and Tjtype ='shidikc'
+			GROUP BY r1.username,month
+
+			union ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '正式报告' and Tjtype ='shidikc'
+			GROUP BY r1.username,month
+
+			UNION ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '预评报告' and Tjtype ='dingjia'
+			GROUP BY r1.username,month
+
+			union ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '正式报告' and Tjtype ='dingjia'
+			GROUP BY r1.username,month
+
+			UNION ALL
+
+			SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '预评报告' and Tjtype ='jiazhigoutong'
+			GROUP BY r1.username,month
+
+			union ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '正式报告' and Tjtype ='jiazhigoutong'
+			GROUP BY r1.username,month
+
+			UNION ALL
+
+			SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '预评报告' and Tjtype ='jszhuanxie'
+			GROUP BY r1.username,month
+
+			union ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe ,0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '正式报告' and Tjtype ='jszhuanxie'
+			GROUP BY r1.username,month
+
+			UNION ALL
+
+			SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie , SUM(t.count) as fgs from tongji t
+			LEFT JOIN user r1
+			on r1.userid = t.userid
+			where baogaotype = '分公司报告审核' and Tjtype ='fgsshenhe'
+			GROUP BY r1.username,month
+
+
+		) tt
+		GROUP BY tt.username,tt.baogaotype,tt.`month`
+		ORDER BY tt.month DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="Counttongjiall" resultType="Integer" >
+		SELECT count(*) from(
+			SELECT tt.username,tt.baogaotype,tt.`month`,SUM(zhuanxie) as zhuanxie,SUM(shenhe) as shenhe,SUM(kancha) as kancha,SUM(shidikc) as shidikc,SUM(dingjia) as dingjia,SUM(jiazhigoutong) as jiazhigoutong,SUM(jszhuanxie) as jszhuanxie,SUM(fgs) as fgs
+				 from(
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '预评报告' and Tjtype ='zhuanxie'
+					GROUP BY r1.username,month
+
+					union ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.COUNT ) as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '正式报告' and Tjtype ='zhuanxie'
+					GROUP BY r1.username,month
+
+					UNION ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie   , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '预评报告' and Tjtype ='shenhe'
+					GROUP BY r1.username,month
+
+					union ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '正式报告' and Tjtype ='shenhe'
+					GROUP BY r1.username,month
+
+					UNION ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs  from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '预评报告' and Tjtype ='kancha'
+					GROUP BY r1.username,month
+
+					union ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '正式报告' and Tjtype ='kancha'
+					GROUP BY r1.username,month
+
+					UNION ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '预评报告' and Tjtype ='shidikc'
+					GROUP BY r1.username,month
+
+					union ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '正式报告' and Tjtype ='shidikc'
+					GROUP BY r1.username,month
+
+					UNION ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '预评报告' and Tjtype ='dingjia'
+					GROUP BY r1.username,month
+
+					union ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '正式报告' and Tjtype ='dingjia'
+					GROUP BY r1.username,month
+
+					UNION ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '预评报告' and Tjtype ='jiazhigoutong'
+					GROUP BY r1.username,month
+
+					union ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '正式报告' and Tjtype ='jiazhigoutong'
+					GROUP BY r1.username,month
+
+					UNION ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '预评报告' and Tjtype ='jszhuanxie'
+					GROUP BY r1.username,month
+
+					union ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe ,0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '正式报告' and Tjtype ='jszhuanxie'
+					GROUP BY r1.username,month
+
+					UNION ALL
+
+					SELECT r1.username, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie , SUM(t.count) as fgs from tongji t
+					LEFT JOIN user r1
+					on r1.userid = t.userid
+					where baogaotype = '分公司报告审核' and Tjtype ='fgsshenhe'
+					GROUP BY r1.username,month
+
+
+				) tt
+			GROUP BY tt.username,tt.baogaotype,tt.`month`
+		) aa
+
+	</select>
+
+	<!--<select id="tongjicheck" resultMap="tongjiamap" parameterType="com.hnkypg.pojo.sreach">-->
+<!--SELECT * from (-->
+		<!--SELECT tt.username,tt.bumen,tt.baogaotype,tt.`month`,SUM(zhuanxie) as zhuanxie,SUM(shenhe) as shenhe,SUM(kancha) as kancha,SUM(shidikc) as shidikc,SUM(dingjia) as dingjia,SUM(jiazhigoutong) as jiazhigoutong,SUM(jszhuanxie) as jszhuanxie,SUM(fgs) as fgs-->
+		<!--from(-->
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '预评报告' and Tjtype ='zhuanxie'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--union ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '正式报告' and Tjtype ='zhuanxie'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--UNION ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie   , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '预评报告' and Tjtype ='shenhe'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--union ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '正式报告' and Tjtype ='shenhe'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--UNION ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs  from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '预评报告' and Tjtype ='kancha'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--union ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '正式报告' and Tjtype ='kancha'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--UNION ALL-->
+
+		<!--SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '预评报告' and Tjtype ='shidikc'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--union ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '正式报告' and Tjtype ='shidikc'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--UNION ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '预评报告' and Tjtype ='dingjia'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--union ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '正式报告' and Tjtype ='dingjia'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--UNION ALL-->
+
+		<!--SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '预评报告' and Tjtype ='jiazhigoutong'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--union ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '正式报告' and Tjtype ='jiazhigoutong'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--UNION ALL-->
+
+		<!--SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '预评报告' and Tjtype ='jszhuanxie'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--union ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe ,0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '正式报告' and Tjtype ='jszhuanxie'-->
+		<!--GROUP BY r1.username,month-->
+
+		<!--UNION ALL-->
+
+		<!--SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie , SUM(t.count) as fgs from tongji t-->
+		<!--LEFT JOIN user r1-->
+		<!--on r1.userid = t.userid-->
+		<!--where baogaotype = '分公司报告审核' and Tjtype ='fgsshenhe'-->
+		<!--GROUP BY r1.username,month-->
+
+
+		<!--) tt-->
+		<!--GROUP BY tt.username,tt.baogaotype,tt.`month`-->
+		<!--) aa-->
+		<!--where aa.bumen= #{bumen} and aa.month =#{yearmonth} and aa.baogaotype=#{baogaotype}-->
+		<!--ORDER BY aa.month DESC LIMIT  #{offset},#{limit}-->
+	<!--</select>-->
+	<select id="tongjicheck" resultMap="tongjiamap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from (
+				SELECT tt.username,tt.bumen,tt.baogaotype,tt.`month`,SUM(zhuanxie) as zhuanxie,SUM(shenhe) as shenhe,SUM(kancha) as kancha,SUM(shidikc) as shidikc,SUM(dingjia) as dingjia,SUM(jiazhigoutong) as jiazhigoutong,SUM(jszhuanxie) as jszhuanxie,SUM(fgs) as fgs
+		from(
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='zhuanxie'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='zhuanxie'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie   , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='shenhe'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='shenhe'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs  from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='kancha'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='kancha'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='shidikc'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='shidikc'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='dingjia'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='dingjia'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='jiazhigoutong'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='jiazhigoutong'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='jszhuanxie'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe ,0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='jszhuanxie'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie , SUM(t.count) as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '分公司报告审核' and Tjtype ='fgsshenhe'
+		GROUP BY r1.bumen, r1.username,month
+
+
+		) tt
+		GROUP BY tt.bumen,tt.username,tt.baogaotype,tt.`month`
+		) aa
+		where aa.bumen= #{bumen} and aa.month =#{yearmonth} and aa.baogaotype=#{baogaotype}
+		ORDER BY aa.month DESC LIMIT  #{offset},#{limit}
+	</select>
+
+	<select id="Counttongjicheck" resultType="Integer" >
+		SELECT count(*) from(
+		SELECT * from (
+		SELECT tt.username,tt.bumen,tt.baogaotype,tt.`month`,SUM(zhuanxie) as zhuanxie,SUM(shenhe) as shenhe,SUM(kancha) as kancha,SUM(shidikc) as shidikc,SUM(dingjia) as dingjia,SUM(jiazhigoutong) as jiazhigoutong,SUM(jszhuanxie) as jszhuanxie,SUM(fgs) as fgs
+		from(
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='zhuanxie'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='zhuanxie'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie   , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='shenhe'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='shenhe'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs  from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='kancha'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='kancha'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='shidikc'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='shidikc'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='dingjia'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='dingjia'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='jiazhigoutong'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='jiazhigoutong'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='jszhuanxie'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe ,0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='jszhuanxie'
+		GROUP BY r1.bumen,r1.username,month
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie , SUM(t.count) as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '分公司报告审核' and Tjtype ='fgsshenhe'
+		GROUP BY r1.bumen,r1.username,month
+
+		) tt
+		GROUP BY tt.bumen,tt.username,tt.baogaotype,tt.`month`
+		) aa
+		where aa.bumen= #{bumen} and aa.month =#{yearmonth} and aa.baogaotype=#{baogaotype}
+		) bb
+
+	</select>
+
+	<select id="tubiaocheck" resultMap="tongjiamap" parameterType="com.hnkypg.pojo.sreach">
+		SELECT * from (
+		SELECT tt.username,tt.bumen,tt.baogaotype,tt.`month`,SUM(zhuanxie) as zhuanxie,SUM(shenhe) as shenhe,SUM(kancha) as kancha,SUM(shidikc) as shidikc,SUM(dingjia) as dingjia,SUM(jiazhigoutong) as jiazhigoutong,SUM(jszhuanxie) as jszhuanxie,SUM(fgs) as fgs
+		from(
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='zhuanxie'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,SUM(t.count) as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='zhuanxie'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie   , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='shenhe'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , SUM(t.count) as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='shenhe'
+		GROUP BY r1.bumen, r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs  from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='kancha'
+		GROUP BY r1.bumen, r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , SUM(t.count) as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='kancha'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='shidikc'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,SUM(t.count) as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='shidikc'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='dingjia'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,SUM(t.count) as dingjia,0 as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='dingjia'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='jiazhigoutong'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,SUM(t.count) as jiazhigoutong,0 as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='jiazhigoutong'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username, r1.bumen,t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '预评报告' and Tjtype ='jszhuanxie'
+		GROUP BY r1.bumen,r1.username,month
+
+		union ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe ,0 as kancha ,0 as shidikc,0 as dingjia,0 as jiazhigoutong,SUM(t.count) as jszhuanxie ,0 as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '正式报告' and Tjtype ='jszhuanxie'
+		GROUP BY r1.bumen,r1.username,month
+
+		UNION ALL
+
+		SELECT r1.username,r1.bumen, t.baogaotype, DATE_FORMAT(chujudate,'%Y-%m') as month,0 as zhuanxie  , 0 as shenhe , 0 as kancha,0 as shidikc,0 as dingjia,0 as jiazhigoutong,0 as jszhuanxie , SUM(t.count) as fgs from tongji t
+		LEFT JOIN user r1
+		on r1.userid = t.userid
+		where baogaotype = '分公司报告审核' and Tjtype ='fgsshenhe'
+		GROUP BY r1.bumen,r1.username,month
+
+
+		) tt
+		GROUP BY tt.bumen,tt.username,tt.baogaotype,tt.`month`
+		) aa
+		where aa.bumen= #{bumen} and aa.month =#{yearmonth} and aa.baogaotype=#{baogaotype}
+		ORDER BY aa.month DESC
+	</select>
+</mapper>
